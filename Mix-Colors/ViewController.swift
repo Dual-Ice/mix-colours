@@ -6,9 +6,8 @@
 //
 
 import UIKit
-import Combine
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UIColorPickerViewControllerDelegate {
 
     @IBOutlet weak var first: UIButton!
     @IBOutlet weak var second: UIButton!
@@ -17,7 +16,6 @@ class ViewController: UIViewController {
     var firstColor = UIColor.red
     var secondColor = UIColor.blue
     var resultColor = UIColor.purple
-    var cancellable: AnyCancellable?
     
     let picker = UIColorPickerViewController()
     
@@ -26,6 +24,7 @@ class ViewController: UIViewController {
         first.backgroundColor = firstColor
         second.backgroundColor = secondColor
         result.backgroundColor = resultColor
+        
     }
     
     @IBAction func firstAction(_ sender: UIButton) {
@@ -40,18 +39,33 @@ class ViewController: UIViewController {
     func handleTap(sender: UIButton) {
         picker.selectedColor = sender.backgroundColor!
         
-        self.cancellable = picker.publisher(for: \.selectedColor)
-                .sink { color in
-                    
-                    //  Changing view color on main thread.
-                    DispatchQueue.main.async {
-                        sender.backgroundColor = color
-                        self.mixColors()
-                        print(color.accessibilityName.localizedLowercase)
-                    }
-                }
-            
-            self.present(picker, animated: true, completion: nil)
+        picker.delegate = self
+        present(picker, animated: true, completion: nil)
+        
+//        let c = picker.publisher(for: \.selectedColor)
+//                .sink { color in
+//                    
+//                    //  Changing view color on main thread.
+//                    DispatchQueue.main.async {
+//                        sender.backgroundColor = color
+//                        self.mixColors()
+//                        print(color.accessibilityName.localizedLowercase)
+//                    }
+//                }
+//            
+//            self.present(picker, animated: true, completion: nil)
+    }
+    
+    func colorPickerViewControllerDidFinish(_ viewController: UIColorPickerViewController) {
+            dismiss(animated: true, completion: nil)
+        print("dismiss")
+    }
+    func colorPickerViewController(
+       _ viewController: UIColorPickerViewController,
+       didSelect color: UIColor,
+       continuously: Bool) {
+            let color = viewController.selectedColor
+           print("select")
     }
     
     func mixColors() {
